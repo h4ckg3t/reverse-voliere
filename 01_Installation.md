@@ -58,10 +58,8 @@ La cible est installée mais vide. Un script va la transformer en serveur de l'e
 Le script est sur le dépôt du TP. Sur ta VM cible, télécharge-le :
 
 ```
-wget LIEN_DU_SCRIPT
+wget https://raw.githubusercontent.com/h4ckg3t/reverse-voliere/main/provision_ctf.sh
 ```
-
-(le lien exact te sera communiqué en début de séance)
 
 ### Lancer le script
 
