@@ -9,8 +9,16 @@ Compte environ 20 minutes pour tout mettre en place.
 ## Ce qu'il te faut
 
 - VMware Workstation installé
-- Une VM Kali (ta machine attaquante)
+- Une VM Kali (ta machine attaquante), avec au moins 4 Go de RAM alloués (Ghidra est gourmand)
 - La VM cible, à récupérer via le lien communiqué en début de séance
+
+## À préparer avant la séance
+
+Pour ne pas perdre de temps le jour J, fais ça en amont :
+
+- Installe VMware et ta VM Kali si ce n'est pas déjà fait
+- Télécharge le zip de la VM cible à l'avance (il fait plusieurs Go, autant ne pas saturer le réseau de la salle en le téléchargeant à 15 en même temps)
+- Vérifie que ta VM Kali a au moins 4 Go de RAM pour que Ghidra tourne correctement
 
 ## Partie 1 : récupérer la VM cible
 
@@ -30,10 +38,10 @@ Le .ovf est le plan de la machine, le .vmdk est son disque dur, le .mf sert à v
 
 ### Marche à suivre
 
-1. Télécharge les trois fichiers depuis le lien.
-2. Mets-les tous les trois dans un même dossier bien identifié, par exemple "VM Voliere".
+1. Télécharge le fichier zip depuis le lien.
+2. Décompresse le zip. Tu obtiens un dossier VM voliere-cible qui contient les trois fichiers.
 3. Dans VMware, menu File puis Open.
-4. Sélectionne le fichier voliere-cible.ovf.
+4. Sélectionne le fichier voliere-cible.ovf dans ce dossier.
 5. VMware demande un nom et un emplacement pour la VM, valide.
 6. L'import se lance, il reconstruit la machine à partir des trois fichiers.
 
@@ -71,7 +79,17 @@ cd pwndbg
 
 ### Vérifier que Kali voit la cible
 
-Les deux VM doivent être sur le même réseau NAT dans VMware pour se voir. Depuis Kali, teste l'accès à la cible (remplace par l'IP que tu as notée) :
+Point important : tes deux VM (la cible et ton Kali) doivent être sur le même réseau NAT dans VMware pour communiquer. Vérifie dans les paramètres réseau de chaque VM que la carte est bien en NAT. Si l'une est en NAT et l'autre en autre chose, elles ne se verront pas, et ni le ssh ni le scp ne marcheront.
+
+Ce réseau NAT est local à ton PC, il ne dépend pas de ta connexion internet ni du wifi. Tes deux VM se voient entre elles même sans internet.
+
+Prépare aussi ton dossier de travail sur Kali, tu y déposeras les binaires à analyser :
+
+```
+mkdir -p ~/re_lab
+```
+
+Puis teste l'accès à la cible (remplace par l'IP que tu as trouvée) :
 
 ```
 ping -c 2 192.168.x.x
