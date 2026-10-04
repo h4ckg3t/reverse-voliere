@@ -1,15 +1,4 @@
 #!/usr/bin/env bash
-# =============================================================================
-#  Provisioning de la VM cible  -  CTF "La Voliere"
-#  TP reverse engineering, Mastere 2, 5 et 6 octobre 2026
-#
-#  A LANCER EN ROOT sur une VM Ubuntu/Debian FRAICHE et JETABLE.
-#  Usage : sudo bash provision_ctf.sh
-#
-#  Construit : service SSH + facade web avec indice, chaine de 5 comptes
-#  dont les mots de passe se recuperent en resolvant les 5 binaires.
-#  Idempotent : relançable sans tout casser.
-# =============================================================================
 set -euo pipefail
 
 log()  { printf '\n\033[1;34m[*] %s\033[0m\n' "$*"; }
@@ -19,7 +8,7 @@ fail() { printf '\033[1;31m[!] %s\033[0m\n' "$*"; exit 1; }
 [[ $EUID -eq 0 ]]              || fail "A lancer en root (sudo bash provision_ctf.sh)."
 command -v apt-get >/dev/null  || fail "Prevu pour Ubuntu/Debian (apt)."
 
-# --- Parametres de la chaine (MODIFIABLES si tu veux changer les secrets) ---
+#Parametres de la chaine (MODIFIABLES si je veux changer les secrets)
 FOOTHOLD_USER="invite"
 FOOTHOLD_PASS="V0l13r3_2026"               # derivable depuis l'indice web
 declare -A CHAIN=(
@@ -31,14 +20,14 @@ declare -A CHAIN=(
 BUILD=/root/voliere_build
 WEBROOT=/var/www/voliere
 
-# ---------------------------------------------------------------------------
+
 log "Installation des paquets (sshd, gcc, python3)"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 apt-get install -y -qq openssh-server gcc python3
 ok "Paquets installes"
 
-# ---------------------------------------------------------------------------
+
 log "Compilation des 5 verrous"
 rm -rf "$BUILD"; mkdir -p "$BUILD/src" "$BUILD/bin"
 
@@ -137,7 +126,7 @@ note() {    # note <user> <fichier> <<< contenu
 
 log "Placement des missions"
 
-# --- invite : brief + verrou1 ---
+#invite : brief + verrou1 ---
 place "$FOOTHOLD_USER" verrou1 verrou1
 note "$FOOTHOLD_USER" "00_BRIEF.txt" <<'EOF'
 ==========================================================
@@ -169,7 +158,7 @@ Le mot de passe n'apparait plus en clair : il faudra lire
 ce que fait reellement le programme.
 EOF
 
-# --- archiviste : note + verrou3 ---
+#archiviste : note + verrou3
 place archiviste verrou3 verrou3
 note archiviste "02_archiviste.txt" <<'EOF'
 Compte archiviste atteint.
@@ -179,7 +168,7 @@ Les archives volees etaient "brouillees" avant stockage.
 verifiee. A vous de remonter la transformation.
 EOF
 
-# --- analyste : note + verrou4 ---
+#analyste : note + verrou4
 place analyste verrou4 verrou4
 note analyste "03_analyste.txt" <<'EOF'
 Compte analyste atteint.
@@ -188,7 +177,7 @@ faire croire au programme qu'on l'a donne.
 'verrou4' garde la console 'admin'. Ouvrez-la.
 EOF
 
-# --- admin : note + verrou5 ---
+#admin : note + verrou5
 place admin verrou5 verrou5
 note admin "04_admin.txt" <<'EOF'
 Compte admin atteint, vous touchez au but.
@@ -198,7 +187,7 @@ la PREUVE FINALE qui identifie K0RB34U et clot l'enquete.
 EOF
 ok "Missions placees"
 
-# ---------------------------------------------------------------------------
+
 log "Mise en place de la facade web (indice d'acces initial)"
 mkdir -p "$WEBROOT/.interne"
 cat > "$WEBROOT/index.html" <<'EOF'
@@ -239,7 +228,7 @@ systemctl daemon-reload
 systemctl enable --now voliere-web.service
 ok "Facade web active sur le port 80"
 
-# ---------------------------------------------------------------------------
+
 log "Configuration SSH (authentification par mot de passe)"
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
 # bloquer la connexion directe en root (ils doivent passer par la chaine)
@@ -248,7 +237,7 @@ systemctl enable --now ssh 2>/dev/null || systemctl enable --now sshd
 systemctl restart ssh 2>/dev/null || systemctl restart sshd
 ok "SSH configure"
 
-# ---------------------------------------------------------------------------
+
 # Nettoyage des sources de build (les etudiants ne doivent pas les trouver)
 rm -rf "$BUILD/src"
 
