@@ -21,6 +21,7 @@ Pour ne pas perdre de temps le jour J, fais ça en amont :
 - Vérifie que ta VM Kali a au moins 4 Go de RAM pour que Ghidra tourne correctement
 
 ## Partie 1 : récupérer la VM cible
+Lien de la VM cible: https://www.swisstransfer.com/dl/01a107a1-1e1c-7050-97da-59058c7d7f0b
 
 La machine cible est fournie sous forme d'une image VMware (format OVF). Le lien de téléchargement est communiqué en début de séance.
 
